@@ -6,7 +6,7 @@
 
 class UGObject;
 
-class FAIRYGUI_API SDisplayObject : public SWidget
+class FAIRYGUI_API SDisplayObject : public SLeafWidget
 {
 public:
     SLATE_BEGIN_ARGS(SDisplayObject) :
