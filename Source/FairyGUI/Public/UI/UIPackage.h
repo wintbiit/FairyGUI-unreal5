@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/FontFace.h"
 #include "UObject/NoExportTypes.h"
 #include "UIPackage.generated.h"
 
@@ -59,11 +60,11 @@ public:
 
 public:
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static void RegisterFont(const FString& FontFace, UObject* Font);
+    static void RegisterFont(const FString& FontFace, UFontFace* Font);
 
 public:
     UUIPackage();
-    virtual  ~UUIPackage();
+    virtual  ~UUIPackage() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     const FString& GetID() const { return ID; }
@@ -119,10 +120,10 @@ public:
 
     UPROPERTY(Transient)
     TArray<UUIPackage*> PackageList;
-    TMap<FString, UUIPackage*> PackageInstByID;
-    TMap<FString, UUIPackage*> PackageInstByName;
+    TMap<FString, TObjectPtr<UUIPackage>> PackageInstByID;
+    TMap<FString, TObjectPtr<UUIPackage>> PackageInstByName;
     TMap<FString, FString> Vars;
     FString Branch;
     UPROPERTY(Transient)
-    TMap<FString, UObject*> Fonts;
+    TMap<FString, TObjectPtr<UFontFace>> Fonts;
 };

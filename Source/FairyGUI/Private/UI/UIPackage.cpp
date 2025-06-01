@@ -38,7 +38,7 @@ void UUIPackage::SetBranch(const FString& InBranch)
     bool empty = InBranch.IsEmpty();
     for (auto& it : UUIPackageStatic::Get().PackageInstByID)
     {
-        UUIPackage*& Pkg = it.Value;
+        UUIPackage* Pkg = it.Value;
         if (empty)
             Pkg->BranchIndex = -1;
         else if (Pkg->Branches.Num() > 0)
@@ -291,7 +291,7 @@ UGObject* UUIPackage::CreateObject(const TSharedPtr<FPackageItem>& Item, UObject
     return g;
 }
 
-void UUIPackage::RegisterFont(const FString& FontFace, UObject* Font)
+void UUIPackage::RegisterFont(const FString& FontFace, UFontFace* Font)
 {
     UUIPackageStatic::Get().Fonts.Add(FontFace, Font);
 }

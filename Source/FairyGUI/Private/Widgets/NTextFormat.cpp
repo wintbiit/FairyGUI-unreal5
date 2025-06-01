@@ -1,4 +1,7 @@
 #include "Widgets/NTextFormat.h"
+
+#include "FairyCommons.h"
+#include "Engine/FontFace.h"
 #include "UI/UIConfig.h"
 #include "UI/UIPackage.h"
 
@@ -28,6 +31,29 @@ bool FNTextFormat::EqualStyle(const FNTextFormat& AnotherFormat) const
         && Align == AnotherFormat.Align;
 }
 
+
+UFontFace* FindFontFace(const FString& Name)
+{
+    TArray PotentialPaths = {
+        FString::Printf(TEXT("/Game/Fonts/%s"), *Name),
+        FString::Printf(TEXT("/Game/Fonts/%s_Font"), *Name),
+        FString::Printf(TEXT("/Game/UI/Fonts/Fonts/%s"), *Name),
+        FString::Printf(TEXT("/Game/UI/Fonts/Fonts/%s_Font"), *Name),
+    };
+
+    UFontFace* FontFace = nullptr;
+    for (FString PotentialPath : PotentialPaths)
+    {
+        FontFace = LoadObject<UFontFace>(nullptr, *PotentialPath);
+        if (FontFace != nullptr)
+        {
+            break;
+        }
+    }
+
+    return FontFace;
+}
+
 FTextBlockStyle FNTextFormat::GetStyle() const
 {
     FTextBlockStyle Style;
@@ -35,16 +61,21 @@ FTextBlockStyle FNTextFormat::GetStyle() const
     const FString& FontFace = Face.IsEmpty() ? FUIConfig::Config.DefaultFont : Face;
     if (!FontFace.StartsWith("ui://"))
     {
-        const UObject* Font = UUIPackageStatic::Get().Fonts.FindRef(FontFace);
+        auto Font = UUIPackageStatic::Get().Fonts.FindRef(FontFace);
+        if (Font == nullptr)
+        {
+            Font = FindFontFace(*FontFace);
+        }
         if (Font != nullptr)
         {
-            FSlateFontInfo SlateFont(Font, Size * 0.75f);
+            FSlateFontInfo SlateFont(Font.Get(), Size * 0.75f);
             SlateFont.OutlineSettings.OutlineSize = OutlineSize;
             SlateFont.OutlineSettings.OutlineColor = OutlineColor;
             Style.SetFont(SlateFont);
         }
         else
         {
+            UE_LOG(LogFairyGUI, Log, TEXT("Font '%s' not found, using default font."), *FontFace);
             FSlateFontInfo SlateFont = FCoreStyle::GetDefaultFontStyle(*FontFace, Size * 0.75f);
             SlateFont.OutlineSettings.OutlineSize = OutlineSize;
             SlateFont.OutlineSettings.OutlineColor = OutlineColor;
