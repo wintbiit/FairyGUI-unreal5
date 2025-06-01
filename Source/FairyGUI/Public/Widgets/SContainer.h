@@ -31,5 +31,5 @@ public:
     virtual FChildren* GetChildren() override;
 
 protected:
-    TPanelChildrenLegacy<FSlotBase> Children;
+    TSlotlessChildren<SWidget> Children;
 };
