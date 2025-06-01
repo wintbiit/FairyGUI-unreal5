@@ -27,7 +27,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Set UI Global Variable"))
     static void SetVar(const FString& VarKey, const FString& VarValue);
 
-    static UUIPackage* AddPackage(const TCHAR* InAssetPath, UObject* WorldContextObject);
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
+    static UUIPackage* AddPackageByPath(const FString& InAssetPath, UObject* WorldContextObject);
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
     static UUIPackage* AddPackage(class UUIPackageAsset* InAsset, UObject* WorldContextObject);

@@ -60,10 +60,10 @@ void UUIPackage::SetVar(const FString& VarKey, const FString& VarValue)
     UUIPackageStatic::Get().Vars.Add(VarKey, VarValue);
 }
 
-UUIPackage* UUIPackage::AddPackage(const TCHAR* InAssetPath, UObject* WorldContextObject)
+UUIPackage* UUIPackage::AddPackageByPath(const FString& InAssetPath, UObject* WorldContextObject)
 {
-    UUIPackageAsset* PackageAsset = Cast<UUIPackageAsset>(StaticLoadObject(UUIPackageAsset::StaticClass(), nullptr, InAssetPath));
-    verifyf(PackageAsset != nullptr, TEXT("Asset not found %s"), InAssetPath);
+    UUIPackageAsset* PackageAsset = Cast<UUIPackageAsset>(StaticLoadObject(UUIPackageAsset::StaticClass(), nullptr, *InAssetPath));
+    verifyf(PackageAsset != nullptr, TEXT("Asset not found %s"), *InAssetPath);
 
     return AddPackage(PackageAsset, WorldContextObject);
 }

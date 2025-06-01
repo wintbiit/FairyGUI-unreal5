@@ -30,12 +30,10 @@ void SContainer::AddChildAt(const TSharedRef<SWidget>& SlotWidget, int32 Index)
     {
         verifyf(!SlotWidget->GetParentWidget().IsValid(), TEXT("Cant add a child has parent"));
 
-        FSlotBase& NewSlot = *new FSlotBase();
         if (Index == Count)
-            Children.Add(&NewSlot);
+            Children.Add(SlotWidget);
         else
-            Children.Insert(&NewSlot, Index);
-        NewSlot.AttachWidget(SlotWidget);
+            Children.Insert(SlotWidget, Index);
 
         UGObject* OnStageObj = SDisplayObject::GetWidgetGObjectIfOnStage(AsShared());
         if (OnStageObj != nullptr)
@@ -52,7 +50,7 @@ void SContainer::SetChildIndex(const TSharedRef<SWidget>& SlotWidget, int32 Inde
     int32 OldIndex = GetChildIndex(SlotWidget);
     verifyf(OldIndex != -1, TEXT("Not a child of this container"));
     if (OldIndex == Index) return;
-    Children.Move(OldIndex, Index);
+    Children.Swap(OldIndex, Index);
 }
 
 void SContainer::RemoveChild(const TSharedRef<SWidget>& SlotWidget)
@@ -64,7 +62,7 @@ void SContainer::RemoveChild(const TSharedRef<SWidget>& SlotWidget)
 void SContainer::RemoveChildAt(int32 Index)
 {
     verifyf(Index >= 0 && Index < Children.Num(), TEXT("Invalid child index"));
-    TSharedRef<SWidget> SlotWidget = Children[Index].GetWidget();
+    TSharedRef<SWidget> SlotWidget = Children[Index];
 
     UGObject* OnStageObj = SDisplayObject::GetWidgetGObjectIfOnStage(AsShared());
     if (OnStageObj != nullptr)
@@ -79,7 +77,7 @@ int32 SContainer::GetChildIndex(const TSharedRef<SWidget>& SlotWidget) const
 {
     for (int32 SlotIdx = 0; SlotIdx < Children.Num(); ++SlotIdx)
     {
-        if (SlotWidget == Children[SlotIdx].GetWidget())
+        if (SlotWidget == Children[SlotIdx])
         {
             return SlotIdx;
         }
@@ -102,7 +100,7 @@ void SContainer::RemoveChildren(int32 BeginIndex, int32 EndIndex)
         {
             if (Dispatcher != nullptr)
             {
-                TSharedRef<SWidget> SlotWidget = Children[BeginIndex].GetWidget();
+                TSharedRef<SWidget> SlotWidget = Children[BeginIndex];
                 Dispatcher->BroadcastEvent(FUIEvents::RemovedFromStage, SlotWidget);
             }
             Children.RemoveAt(BeginIndex);
@@ -125,9 +123,7 @@ void SContainer::OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedC
 
         for (int32 ChildIndex = 0; ChildIndex < Children.Num(); ++ChildIndex)
         {
-            const FSlotBase& CurChild = Children[ChildIndex];
-            const TSharedRef<SWidget>& CurWidget = CurChild.GetWidget();
-            if (ArrangedChildren.Accepts(CurWidget->GetVisibility()))
+            if (const TSharedRef<SWidget>& CurWidget = Children[ChildIndex]; ArrangedChildren.Accepts(CurWidget->GetVisibility()))
                 ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
                     CurWidget, FVector2D::ZeroVector, CurWidget.Get().GetDesiredSize()
                 ));
