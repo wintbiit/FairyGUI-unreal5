@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDisplayObject.h"
+#include "Utils/Children.h"
 
 class FAIRYGUI_API SContainer : public SDisplayObject
 {
@@ -30,5 +31,5 @@ public:
     virtual FChildren* GetChildren() override;
 
 protected:
-    TPanelChildren<FSlotBase> Children;
+    TPanelChildrenLegacy<FSlotBase> Children;
 };

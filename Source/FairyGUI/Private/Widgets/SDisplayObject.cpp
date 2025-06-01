@@ -4,7 +4,7 @@
 #include "UI/GObject.h"
 
 bool SDisplayObject::bMindVisibleOnly = false;
-FNoChildren SDisplayObject::NoChildrenInstance;
+FNoChildren SDisplayObject::NoChildrenInstance = FNoChildren::NoChildrenInstance;
 FName SDisplayObject::SDisplayObjectTag("SDisplayObjectTag");
 
 SDisplayObject::SDisplayObject() :
