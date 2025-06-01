@@ -152,7 +152,7 @@ void UGLabel::SetupAfterAdd(FByteBuffer* Buffer, int32 BeginPos)
     if (!Buffer->Seek(BeginPos, 6))
         return;
 
-    if ((EObjectType)Buffer->ReadByte() != PackageItem->ObjectType)
+    if (static_cast<EObjectType>(Buffer->ReadByte()) != PackageItem->ObjectType)
         return;
 
     const FString* str;
@@ -169,21 +169,20 @@ void UGLabel::SetupAfterAdd(FByteBuffer* Buffer, int32 BeginPos)
 
     if (Buffer->ReadBool())
     {
-        UGTextInput* input = Cast<UGTextInput>(GetTextField());
-        if (input)
+        if (UGTextInput* Input = Cast<UGTextInput>(GetTextField()))
         {
             if ((str = Buffer->ReadSP()) != nullptr)
-                input->SetPrompt(*str);
+                Input->SetPrompt(*str);
             if ((str = Buffer->ReadSP()) != nullptr)
-                input->SetRestrict(*str);
+                Input->SetRestrict(*str);
             iv = Buffer->ReadInt();
             if (iv != 0)
-                input->SetMaxLength(iv);
+                Input->SetMaxLength(iv);
             iv = Buffer->ReadInt();
             if (iv != 0)
-                input->SetKeyboardType(iv);
+                Input->SetKeyboardType(iv);
             if (Buffer->ReadBool())
-                input->SetPassword(true);
+                Input->SetPassword(true);
         }
         else
             Buffer->Skip(13);

@@ -42,7 +42,7 @@ public:
     TOptional<TArray<FString>> HighResolution;
 
     //atlas
-    UNTexture* Texture;
+    TObjectPtr<UNTexture> Texture;
 
     //image
     TOptional<FBox2D> Scale9Grid;

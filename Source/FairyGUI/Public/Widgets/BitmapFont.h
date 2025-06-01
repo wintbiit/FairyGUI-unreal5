@@ -23,7 +23,7 @@ struct FAIRYGUI_API FBitmapFont : public FGCObject
 
     TMap<TCHAR, FGlyph> Glyphs;
 
-    UNTexture* Texture;
+    TObjectPtr<UNTexture> Texture;
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
 

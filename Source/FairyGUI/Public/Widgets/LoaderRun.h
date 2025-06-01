@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Slate.h"
+#include "UI/GLoader.h"
 #include "Utils/HTMLElement.h"
 
 class UFairyApplication;
@@ -65,5 +66,5 @@ private:
     FHTMLElement HTMLElement;
     TSharedRef< const FString > Text;
     FTextRange Range;
-    class UGLoader* Loader;
+    TObjectPtr<UGLoader> Loader;
 };

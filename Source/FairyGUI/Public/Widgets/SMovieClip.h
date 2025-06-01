@@ -6,7 +6,7 @@ struct FAIRYGUI_API FMovieClipData : public FGCObject
 {
     struct Frame
     {
-        UNTexture *Texture;
+        TObjectPtr<UNTexture> Texture;
         float AddDelay;
     };
 

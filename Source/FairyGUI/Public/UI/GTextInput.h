@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GObject.h"
+#include "GTextField.h"
 #include "Widgets/NTextFormat.h"
 #include "GTextInput.generated.h"
 
@@ -10,33 +11,28 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTextChangedEvent, const FText&, T
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTextCommittedEvent, const FText&, Text, ETextCommit::Type, CommitMethod);
 
 UCLASS(BlueprintType)
-class FAIRYGUI_API UGTextInput : public UGObject
+class FAIRYGUI_API UGTextInput : public UGTextField
 {
 	GENERATED_BODY()
 
 public:
 	UGTextInput();
-	virtual ~UGTextInput();
+	virtual ~UGTextInput() override;
 
 	virtual const FString& GetText() const override { return Text; }
-	void SetText(const FString& InText) override;
+	virtual void SetText(const FString& InText) override;
 
 	TSharedRef<SMultiLineEditableText> GetInputWidget() const;
 
-	UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-	bool IsSingleLine() const;
+	virtual bool IsSingleLine() const override;
 
-	UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-	void SetSingleLine(bool InSingleLine);
+	virtual void SetSingleLine(bool InSingleLine) override;
 
-	UFUNCTION(BlueprintPure, Category = "FairyGUI")
-	FNTextFormat& GetTextFormat() { return TextFormat; }
+	virtual FNTextFormat& GetTextFormat() override { return TextFormat; }
 
-	UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-	void SetTextFormat(const FNTextFormat& InTextFormat);
+	virtual void SetTextFormat(const FNTextFormat& InTextFormat) override;
 
-	UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-	void ApplyFormat();
+	virtual void ApplyFormat() override;
 
 	UFUNCTION(BlueprintCallable, Category = "FairyGUI")
 	void SetPrompt(const FString& InPrompt);

@@ -16,5 +16,5 @@ public:
     virtual FString GetReferencerName() const override;
 
 private:
-    TMap<FString, TArray<UGObject*>> Pool;
+    TMap<FString, TArray<TObjectPtr<UGObject>>> Pool;
 };

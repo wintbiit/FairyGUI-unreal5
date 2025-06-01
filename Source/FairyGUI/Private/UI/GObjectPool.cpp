@@ -9,7 +9,7 @@ UGObject* FGObjectPool::GetObject(const FString & URL, UObject* WorldContextObje
         return nullptr;
 
     UGObject* ret;
-    TArray<UGObject*>& arr = Pool.FindOrAdd(URL2);
+    TArray<TObjectPtr<UGObject>>& arr = Pool.FindOrAdd(URL2);
     if (arr.Num() > 0)
         ret = arr.Pop();
     else
@@ -19,8 +19,8 @@ UGObject* FGObjectPool::GetObject(const FString & URL, UObject* WorldContextObje
 
 void FGObjectPool::ReturnObject(UGObject* Obj)
 {
-    TArray<UGObject*>& arr = Pool.FindOrAdd(Obj->GetResourceURL());
-    arr.Add(Obj);
+    TArray<TObjectPtr<UGObject>>& Arr = Pool.FindOrAdd(Obj->GetResourceURL());
+    Arr.Add(Obj);
 }
 
 void FGObjectPool::AddReferencedObjects(FReferenceCollector& Collector)

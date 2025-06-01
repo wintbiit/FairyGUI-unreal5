@@ -147,8 +147,8 @@ void FNGraphics::UpdateMeshNow()
         }
     }
 
-    AlphaBackup.SetNum(vertCount, false);
-    PositionsBackup.SetNum(vertCount, false);
+    AlphaBackup.SetNum(vertCount, EAllowShrinking::No);
+    PositionsBackup.SetNum(vertCount, EAllowShrinking::No);
 
     for (int32 i = 0; i < vertCount; i++)
     {

@@ -317,7 +317,7 @@ void UUIPackage::Load(FByteBuffer* Buffer)
 
     cnt = Buffer->ReadInt();
     TArray<FString>* StringTable = new TArray<FString>();
-    StringTable->SetNum(cnt, true);
+    StringTable->SetNum(cnt, EAllowShrinking::Yes);
     for (int32 i = 0; i < cnt; i++)
     {
         (*StringTable)[i] = Buffer->ReadString();

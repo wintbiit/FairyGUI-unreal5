@@ -18,6 +18,6 @@ public:
     UPROPERTY(Instanced)
     class UAssetImportData* AssetImportData;
 
-    virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+    virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
 #endif
 };

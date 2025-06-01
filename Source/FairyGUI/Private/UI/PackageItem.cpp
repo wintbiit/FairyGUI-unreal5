@@ -10,7 +10,8 @@ FPackageItem::FPackageItem() :
     Size(0, 0),
     Texture(nullptr),
     bScaleByTile(false),
-    TileGridIndice(0)
+    TileGridIndice(0),
+    bTranslated(false)
 {
 }
 

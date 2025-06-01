@@ -11,10 +11,10 @@ class FAIRYGUI_API UGTextField : public UGObject
 
 public:
     UGTextField();
-    virtual ~UGTextField();
+    virtual ~UGTextField() override;
 
     virtual const FString& GetText() const override { return Text; }
-    void SetText(const FString& InText) override;
+    virtual void SetText(const FString& InText) override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     bool IsUBBEnabled() const { return bUBBEnabled; }
@@ -35,13 +35,13 @@ public:
     virtual void SetSingleLine(bool InSingleLine);
 
     UFUNCTION(BlueprintPure, Category = "FairyGUI")
-    FNTextFormat& GetTextFormat();
+    virtual FNTextFormat& GetTextFormat();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    void SetTextFormat(const FNTextFormat& InTextFormat);
+    virtual void SetTextFormat(const FNTextFormat& InTextFormat);
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    void ApplyFormat();
+    virtual void ApplyFormat();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     virtual FVector2D GetTextSize();

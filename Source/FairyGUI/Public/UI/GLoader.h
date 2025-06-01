@@ -11,7 +11,7 @@ class FAIRYGUI_API UGLoader : public UGObject
 
 public:
     UGLoader();
-    virtual ~UGLoader();
+    virtual ~UGLoader() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     const FString& GetURL() const { return URL; }

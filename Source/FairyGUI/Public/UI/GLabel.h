@@ -12,7 +12,7 @@ class FAIRYGUI_API UGLabel : public UGComponent
 
 public:
     UGLabel();
-    virtual ~UGLabel();
+    virtual ~UGLabel() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     const FString& GetTitle() const { return GetText(); }
@@ -41,9 +41,11 @@ public:
     virtual void SetProp(EObjectPropID PropID, const FNVariant& InValue) override;
 
 protected:
-    virtual void ConstructExtension(FByteBuffer* Buffer);
+    virtual void ConstructExtension(FByteBuffer* Buffer) override;
     virtual void SetupAfterAdd(FByteBuffer* Buffer, int32 BeginPos) override;
 
-    UGObject* TitleObject;
-    UGObject* IconObject;
+    UPROPERTY()
+    TObjectPtr<UGObject> TitleObject;
+    UPROPERTY()
+    TObjectPtr<UGObject> IconObject;
 };

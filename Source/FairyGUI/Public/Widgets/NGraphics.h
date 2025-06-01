@@ -44,7 +44,7 @@ private:
     FColor Color;
     EFlipType Flip;
 
-    UNTexture* Texture;
+    TObjectPtr<UNTexture> Texture;
     FSlateBrush Brush;
     FSlateResourceHandle ResourceHandle;
     TSharedPtr<IMeshFactory> MeshFactory;

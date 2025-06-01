@@ -2,18 +2,18 @@
 #include "EditorFramework/AssetImportData.h"
 
 #if WITH_EDITORONLY_DATA
-void UUIPackageAsset::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const
+void UUIPackageAsset::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const
 {
     if (AssetImportData)
     {
-        OutTags.Add(FAssetRegistryTag(SourceFileTagName(),
+        Context.AddTag(FAssetRegistryTag(SourceFileTagName(),
             AssetImportData->GetSourceData().ToJson(),
             FAssetRegistryTag::TT_Hidden));
 #if WITH_EDITOR
-        AssetImportData->AppendAssetRegistryTags(OutTags);
+        AssetImportData->AppendAssetRegistryTags(Context);
 #endif
     }
 
-    Super::GetAssetRegistryTags(OutTags);
+    Super::GetAssetRegistryTags(Context);
 }
 #endif
