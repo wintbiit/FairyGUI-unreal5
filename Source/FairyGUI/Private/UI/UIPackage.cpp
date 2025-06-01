@@ -291,7 +291,7 @@ UGObject* UUIPackage::CreateObject(const TSharedPtr<FPackageItem>& Item, UObject
     return g;
 }
 
-void UUIPackage::RegisterFont(const FString& FontFace, UFontFace* Font)
+void UUIPackage::RegisterFont(const FString& FontFace, UFont* Font)
 {
     UUIPackageStatic::Get().Fonts.Add(FontFace, Font);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/FontFace.h"
+#include "Engine/Font.h"
 #include "UObject/NoExportTypes.h"
 #include "UIPackage.generated.h"
 
@@ -60,7 +60,7 @@ public:
 
 public:
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static void RegisterFont(const FString& FontFace, UFontFace* Font);
+    static void RegisterFont(const FString& FontFace, UFont* Font);
 
 public:
     UUIPackage();
@@ -125,5 +125,5 @@ public:
     TMap<FString, FString> Vars;
     FString Branch;
     UPROPERTY(Transient)
-    TMap<FString, TObjectPtr<UFontFace>> Fonts;
+    TMap<FString, TObjectPtr<UFont>> Fonts;
 };

@@ -142,14 +142,17 @@ private:
 
 private:
     UPROPERTY(Transient)
-        UGRoot* UIRoot;
+    TObjectPtr<UGRoot> UIRoot;
     UPROPERTY(Transient)
-        UDragDropManager* DragDropManager;
+    UDragDropManager* DragDropManager;
     UPROPERTY(Transient)
-        TArray<UEventContext*> EventContextPool;
+    TArray<UEventContext*> EventContextPool;
+    UPROPERTY(Transient)
+    TObjectPtr<UGameViewportClient> ViewportClient;
+    UPROPERTY(Transient)
+    TObjectPtr<UGameInstance> GameInstance;
 
     TSharedPtr<IInputProcessor> InputProcessor;
-    UGameViewportClient* ViewportClient;
     TSharedPtr<SWidget> ViewportWidget;
     TIndirectArray<FTouchInfo> Touches;
     FTouchInfo* LastTouch;
@@ -159,7 +162,6 @@ private:
     bool bSoundEnabled;
     float SoundVolumeScale;
 
-    UGameInstance* GameInstance;
 
     static TMap<uint32, UFairyApplication*> Instances;
 };

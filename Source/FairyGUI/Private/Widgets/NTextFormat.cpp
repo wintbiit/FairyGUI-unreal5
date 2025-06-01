@@ -32,7 +32,7 @@ bool FNTextFormat::EqualStyle(const FNTextFormat& AnotherFormat) const
 }
 
 
-UFontFace* FindFontFace(const FString& Name)
+UFont* FindFontFace(const FString& Name)
 {
     TArray PotentialPaths = {
         FString::Printf(TEXT("/Game/Fonts/%s"), *Name),
@@ -41,10 +41,10 @@ UFontFace* FindFontFace(const FString& Name)
         FString::Printf(TEXT("/Game/UI/Fonts/Fonts/%s_Font"), *Name),
     };
 
-    UFontFace* FontFace = nullptr;
+    UFont* FontFace = nullptr;
     for (FString PotentialPath : PotentialPaths)
     {
-        FontFace = LoadObject<UFontFace>(nullptr, *PotentialPath);
+        FontFace = LoadObject<UFont>(nullptr, *PotentialPath);
         if (FontFace != nullptr)
         {
             break;
