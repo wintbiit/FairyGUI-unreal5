@@ -1,4 +1,6 @@
 #include "UI/GWindow.h"
+
+#include "FairyApplication.h"
 #include "UI/GGraph.h"
 #include "UI/GRoot.h"
 #include "UI/UIPackage.h"
@@ -15,7 +17,7 @@ UGWindow* UGWindow::CreateWindow(const FString& PackageName, const FString& Reso
 
 UGWindow::UGWindow()
 {
-    bBringToFontOnClick = FUIConfig::Config.BringWindowToFrontOnClick;
+    bBringToFontOnClick = UFairyApplication::GetUIConfig().BringWindowToFrontOnClick;
 
     On(FUIEvents::AddedToStage).AddUObject(this, &UGWindow::OnAddedToStageHandler);
     On(FUIEvents::RemovedFromStage).AddUObject(this, &UGWindow::OnRemovedFromStageHandler);
@@ -129,10 +131,10 @@ void UGWindow::ShowModalWait(int32 InRequestingCmd)
     if (InRequestingCmd != 0)
         RequestingCmd = InRequestingCmd;
 
-    if (!FUIConfig::Config.WindowModalWaiting.IsEmpty())
+    if (!UFairyApplication::GetUIConfig().WindowModalWaiting.IsEmpty())
     {
         if (ModalWaitPane == nullptr)
-            ModalWaitPane = UUIPackage::CreateObjectFromURL(FUIConfig::Config.WindowModalWaiting, this);
+            ModalWaitPane = UUIPackage::CreateObjectFromURL(UFairyApplication::GetUIConfig().WindowModalWaiting, this);
 
         LayoutModalWaitPane();
 

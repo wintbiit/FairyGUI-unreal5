@@ -1,34 +1,21 @@
 #include "FairyApplication.h"
 #include "Framework/Application/SlateApplication.h"
-#include "Slate/SGameLayerManager.h"
-#include "UIPackageAsset.h"
 #include "UI/GRoot.h"
 #include "UI/UIPackage.h"
 #include "UI/UIObjectFactory.h"
 #include "UI/PackageItem.h"
 #include "UI/GWindow.h"
-#include "UI/PopupMenu.h"
 #include "UI/DragDropManager.h"
 #include "Tween/TweenManager.h"
 #include "Widgets/NTexture.h"
-#include "Utils/ByteBuffer.h"
 
-TMap<uint32, UFairyApplication*> UFairyApplication::Instances;
-
-struct FMyScopedSwitchWorldHack
-{
-    FMyScopedSwitchWorldHack(UWorld* World)
-    {
-        PrevWorld = GWorld;
-        GWorld = World;
-    }
-
-    ~FMyScopedSwitchWorldHack()
-    {
-        GWorld = PrevWorld;
-    }
-    UWorld* PrevWorld;
-};
+TArray<TObjectPtr<UUIPackage>> UFairyApplication::PackageList;
+TMap<FString, TObjectPtr<UUIPackage>> UFairyApplication::PackageInstByID;
+TMap<FString, TObjectPtr<UUIPackage>> UFairyApplication::PackageInstByName;
+TMap<FString, TObjectPtr<UFont>> UFairyApplication::Fonts;
+TMap<FString, FString> UFairyApplication::Vars;
+FUIConfig UFairyApplication::UIConfig;
+FString UFairyApplication::Branch;
 
 UFairyApplication::FTouchInfo::FTouchInfo() :
     UserIndex(0),
@@ -68,76 +55,12 @@ bool UFairyApplication::FInputProcessor::HandleMouseMoveEvent(FSlateApplication&
     return false;
 }
 
-UFairyApplication* UFairyApplication::Get(UObject* WorldContextObject)
-{
-    UWorld* World = WorldContextObject->GetWorld();
-    verifyf(World != nullptr, TEXT("Null World?"));
-    verifyf(World->IsGameWorld(), TEXT("Not a Game World?"));
-
-    UFairyApplication* Instance = Instances.FindRef(World->GetGameInstance()->GetUniqueID());
-    if (Instance == nullptr)
-    {
-        Instance = NewObject<UFairyApplication>();
-        Instances.Add(World->GetGameInstance()->GetUniqueID(), Instance);
-        Instance->GameInstance = World->GetGameInstance();
-        Instance->AddToRoot();
-        Instance->OnCreate();
-    }
-    return Instance;
-}
-
-void UFairyApplication::Destroy()
-{
-    FUIObjectFactory::PackageItemExtensions.Reset();
-    FUIObjectFactory::LoaderExtension = nullptr;
-
-    UNTexture::DestroyWhiteTexture();
-    UUIPackageStatic::Destroy();
-    FUIConfig::Config = FUIConfig(); //Reset Configuration to default values
-
-    for (auto& it : Instances)
-    {
-        it.Value->RemoveFromRoot();
-        it.Value->OnDestroy();
-    }
-    Instances.Reset();
-}
-
 UFairyApplication::UFairyApplication() :
     bSoundEnabled(true),
     SoundVolumeScale(1)
 {
     LastTouch = new FTouchInfo();
     Touches.Add(LastTouch);
-}
-
-void UFairyApplication::OnCreate()
-{
-    ViewportClient = GameInstance->GetWorld()->GetGameViewport();
-    if (ViewportClient == nullptr)
-        return;
-
-    ViewportWidget = ViewportClient->GetGameViewportWidget();
-
-    DragDropManager = NewObject<UDragDropManager>(this);
-    DragDropManager->CreateAgent();
-
-    PostTickDelegateHandle = FSlateApplication::Get().OnPostTick().AddUObject(this, &UFairyApplication::OnSlatePostTick);
-
-    InputProcessor = MakeShareable(new FInputProcessor(this));
-    FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor);
-
-}
-
-void UFairyApplication::OnDestroy()
-{
-    FTweenManager::Singleton.Reset();
-
-    if (InputProcessor.IsValid())
-        FSlateApplication::Get().UnregisterInputPreProcessor(InputProcessor);
-
-    if (PostTickDelegateHandle.IsValid())
-        FSlateApplication::Get().OnPostTick().Remove(PostTickDelegateHandle);
 }
 
 UGRoot* UFairyApplication::GetUIRoot() const
@@ -237,6 +160,43 @@ void UFairyApplication::SetSoundEnabled(bool bEnabled)
 void UFairyApplication::SetSoundVolumeScale(float VolumnScale)
 {
     SoundVolumeScale = VolumnScale;
+}
+
+void UFairyApplication::Initialize(FSubsystemCollectionBase& Collection)
+{
+    ViewportClient = GetWorld()->GetGameViewport();
+    if (ViewportClient == nullptr)
+        return;
+
+    ViewportWidget = ViewportClient->GetGameViewportWidget();
+
+    DragDropManager = NewObject<UDragDropManager>(this);
+    DragDropManager->CreateAgent();
+
+    PostTickDelegateHandle = FSlateApplication::Get().OnPostTick().AddUObject(this, &UFairyApplication::OnSlatePostTick);
+
+    InputProcessor = MakeShareable(new FInputProcessor(this));
+    FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor);
+    
+    Super::Initialize(Collection);
+}
+
+void UFairyApplication::Deinitialize()
+{
+    FUIObjectFactory::PackageItemExtensions.Reset();
+    FUIObjectFactory::LoaderExtension = nullptr;
+
+    UNTexture::DestroyWhiteTexture();
+    
+    FTweenManager::Singleton.Reset();
+
+    if (InputProcessor.IsValid())
+        FSlateApplication::Get().UnregisterInputPreProcessor(InputProcessor);
+
+    if (PostTickDelegateHandle.IsValid())
+        FSlateApplication::Get().OnPostTick().Remove(PostTickDelegateHandle);
+    
+    Super::Deinitialize();
 }
 
 bool UFairyApplication::DispatchEvent(const FName& EventType, const TSharedRef<SWidget>& Initiator, const FNVariant& Data)
@@ -376,7 +336,7 @@ UFairyApplication::FTouchInfo* UFairyApplication::GetTouchInfo(const FPointerEve
         TouchInfo = new FTouchInfo();
         Touches.Add(TouchInfo);
         TouchInfo->UserIndex = MouseEvent.GetUserIndex();
-        TouchInfo->PointerIndex = (int32)MouseEvent.GetPointerIndex();
+        TouchInfo->PointerIndex = static_cast<int32>(MouseEvent.GetPointerIndex());
     }
 
     LastTouch = TouchInfo;
@@ -422,7 +382,7 @@ void UFairyApplication::PreviewUpEvent(const FPointerEvent& MouseEvent)
 
     if (TouchInfo->MouseCaptors.Num() > 0)
     {
-        FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+        // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
         int32 cnt = TouchInfo->MouseCaptors.Num();
         for (int32 i = 0; i < cnt; i++)
@@ -446,7 +406,7 @@ void UFairyApplication::PreviewMoveEvent(const FPointerEvent& MouseEvent)
 
     if (!TouchInfo->bToClearCaptors && TouchInfo->MouseCaptors.Num() > 0)
     {
-        FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+        // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
         int32 cnt = TouchInfo->MouseCaptors.Num();
         for (int32 i = 0; i < cnt; i++)
@@ -462,7 +422,7 @@ void UFairyApplication::PreviewMoveEvent(const FPointerEvent& MouseEvent)
 
 FReply UFairyApplication::OnWidgetMouseButtonDown(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-    FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+    // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
 
@@ -491,7 +451,7 @@ FReply UFairyApplication::OnWidgetMouseButtonDown(const TSharedRef<SWidget>& Wid
 
 FReply UFairyApplication::OnWidgetMouseButtonUp(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-    FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+    // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
     if (TouchInfo == nullptr)
@@ -547,7 +507,7 @@ FReply UFairyApplication::OnWidgetMouseButtonDoubleClick(const TSharedRef<SWidge
 
 void UFairyApplication::OnWidgetMouseEnter(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-    FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+    // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
     DispatchEvent(FUIEvents::RollOver, Widget);
@@ -555,7 +515,7 @@ void UFairyApplication::OnWidgetMouseEnter(const TSharedRef<SWidget>& Widget, co
 
 void UFairyApplication::OnWidgetMouseLeave(const TSharedRef<SWidget>& Widget, const FPointerEvent& MouseEvent)
 {
-    FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+    // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
     DispatchEvent(FUIEvents::RollOut, Widget);
@@ -563,7 +523,7 @@ void UFairyApplication::OnWidgetMouseLeave(const TSharedRef<SWidget>& Widget, co
 
 FReply UFairyApplication::OnWidgetMouseWheel(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-    FMyScopedSwitchWorldHack SwitchWorld(GameInstance->GetWorld());
+    // FMyScopedSwitchWorldHack SwitchWorld(GetWorld());
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
     TouchInfo->Event = MouseEvent;

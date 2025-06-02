@@ -16,8 +16,8 @@ UGButton::UGButton() :
     bChangeStateOnClick(true),
     DownEffectValue(0.8f)
 {
-    Sound = FUIConfig::Config.ButtonSound;
-    SoundVolumeScale = FUIConfig::Config.ButtonSoundVolumeScale;
+    Sound = UFairyApplication::GetUIConfig().ButtonSound;
+    SoundVolumeScale = UFairyApplication::GetUIConfig().ButtonSoundVolumeScale;
 }
 
 UGButton::~UGButton()

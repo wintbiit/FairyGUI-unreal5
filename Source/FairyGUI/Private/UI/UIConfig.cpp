@@ -1,8 +1,6 @@
 #include "UI/UIConfig.h"
 #include "FairyApplication.h"
 
-FUIConfig FUIConfig::Config;
-
 FUIConfig::FUIConfig() :
     ButtonSoundVolumeScale(1),
     DefaultScrollStep(25),

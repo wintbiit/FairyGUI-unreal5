@@ -13,7 +13,7 @@ class UDragDropManager : public UObject
 
 public:
     UDragDropManager();
-    virtual ~UDragDropManager();
+    virtual ~UDragDropManager() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     UGLoader* GetAgent() const { return Agent; }

@@ -3,16 +3,6 @@
 #include "UI/UIObjectFactory.h"
 #include "Tween/GTween.h"
 
-const FUIConfig& UFairyBlueprintLibrary::GetUIConfig()
-{
-    return FUIConfig::Config;
-}
-
-void UFairyBlueprintLibrary::SetUIConfig(const FUIConfig& InConfig)
-{
-    FUIConfig::Config = InConfig;
-}
-
 bool UFairyBlueprintLibrary::GetVariantAsBool(UPARAM(ref) FNVariant& InVariant)
 {
     return InVariant.AsBool();

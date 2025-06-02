@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/Font.h"
 #include "UObject/NoExportTypes.h"
 #include "UIPackage.generated.h"
 
@@ -16,28 +15,28 @@ class FAIRYGUI_API UUIPackage : public UObject
     GENERATED_BODY()
 
 public:
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
     static const FString& GetBranch();
 
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
     static void SetBranch(const FString& InBranch);
 
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Get UI Global Variable"))
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Get UI Global Variable", WorldContext = "WorldContextObject"))
     static FString GetVar(const FString& VarKey);
 
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Set UI Global Variable"))
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Set UI Global Variable", WorldContext = "WorldContextObject"))
     static void SetVar(const FString& VarKey, const FString& VarValue);
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
-    static UUIPackage* AddPackageByPath(const FString& InAssetPath, UObject* WorldContextObject);
+    static UUIPackage* AddPackageByPath(const FString& InAssetPath);
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
-    static UUIPackage* AddPackage(class UUIPackageAsset* InAsset, UObject* WorldContextObject);
+    static UUIPackage* AddPackage(class UUIPackageAsset* InAsset);
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
-    static void RemovePackage(const FString& IDOrName, UObject* WorldContextObject);
+    static void RemovePackage(const FString& IDOrName);
 
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
     static void RemoveAllPackages();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
@@ -51,16 +50,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Create UI From URL", DeterminesOutputType = "ClassType", WorldContext = "WorldContextObject"))
     static UGObject* CreateObjectFromURL(const FString& URL, UObject* WorldContextObject, TSubclassOf<UGObject> ClassType = nullptr);
+    
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (WorldContext = "WorldContextObject"))
+    static void RegisterFont(const FString& FontFace, UFont* Font, UObject* WorldContextObject);
 
     static FString GetItemURL(const FString& PackageName, const FString& ResourceName);
     static TSharedPtr<FPackageItem> GetItemByURL(const FString& URL);
     static FString NormalizeURL(const FString& URL);
 
     static int32 Constructing;
-
-public:
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static void RegisterFont(const FString& FontFace, UFont* Font);
 
 public:
     UUIPackage();
@@ -102,28 +100,7 @@ private:
     TArray<TMap<FString, FString>> Dependencies;
     TArray<FString> Branches;
     int32 BranchIndex;
-    TSet<uint32> RefWorlds;
 
     friend class FPackageItem;
     friend class UFairyApplication;
-};
-
-UCLASS(Transient)
-class FAIRYGUI_API UUIPackageStatic : public UObject
-{
-    GENERATED_BODY()
-
-public:
-    static UUIPackageStatic* Singleton;
-    static UUIPackageStatic& Get();
-    static void Destroy();
-
-    UPROPERTY(Transient)
-    TArray<UUIPackage*> PackageList;
-    TMap<FString, TObjectPtr<UUIPackage>> PackageInstByID;
-    TMap<FString, TObjectPtr<UUIPackage>> PackageInstByName;
-    TMap<FString, FString> Vars;
-    FString Branch;
-    UPROPERTY(Transient)
-    TMap<FString, TObjectPtr<UFont>> Fonts;
 };

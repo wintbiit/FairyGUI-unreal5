@@ -1,5 +1,6 @@
 #include "Widgets/NTextFormat.h"
 
+#include "FairyApplication.h"
 #include "FairyCommons.h"
 #include "Engine/FontFace.h"
 #include "UI/UIConfig.h"
@@ -58,10 +59,10 @@ FTextBlockStyle FNTextFormat::GetStyle() const
 {
     FTextBlockStyle Style;
 
-    const FString& FontFace = Face.IsEmpty() ? FUIConfig::Config.DefaultFont : Face;
+    const FString& FontFace = Face.IsEmpty() ? UFairyApplication::GetUIConfig().DefaultFont : Face;
     if (!FontFace.StartsWith("ui://"))
     {
-        auto Font = UUIPackageStatic::Get().Fonts.FindRef(FontFace);
+        auto Font = UFairyApplication::Fonts.FindRef(FontFace);
         if (Font == nullptr)
         {
             Font = FindFontFace(*FontFace);

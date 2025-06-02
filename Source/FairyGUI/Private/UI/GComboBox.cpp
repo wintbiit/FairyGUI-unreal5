@@ -1,4 +1,6 @@
 #include "UI/GComboBox.h"
+
+#include "FairyApplication.h"
 #include "UI/UIPackage.h"
 #include "UI/GTextField.h"
 #include "UI/GTextInput.h"
@@ -13,7 +15,7 @@ UGComboBox::UGComboBox() :
     bItemsUpdated(true),
     SelectedIndex(-1)
 {
-    VisibleItemCount = FUIConfig::Config.DefaultComboBoxVisibleItemCount;
+    VisibleItemCount = UFairyApplication::GetUIConfig().DefaultComboBoxVisibleItemCount;
 }
 
 UGComboBox::~UGComboBox()

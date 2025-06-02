@@ -134,7 +134,7 @@ void UGRoot::CreateModalLayer()
 {
     ModalLayer = NewObject<UGGraph>(this);
     ModalLayer->SetSize(Size);
-    ModalLayer->DrawRect(0, FColor::White, FUIConfig::Config.ModalLayerColor);
+    ModalLayer->DrawRect(0, FColor::White, UFairyApplication::GetUIConfig().ModalLayerColor);
     ModalLayer->AddRelation(this, ERelationType::Size);
 }
 
@@ -185,11 +185,11 @@ void UGRoot::CloseModalWait()
 
 UGObject* UGRoot::GetModalWaitingPane()
 {
-    if (!FUIConfig::Config.GlobalModalWaiting.IsEmpty())
+    if (!UFairyApplication::GetUIConfig().GlobalModalWaiting.IsEmpty())
     {
         if (ModalWaitPane == nullptr)
         {
-            ModalWaitPane = UUIPackage::CreateObjectFromURL(FUIConfig::Config.GlobalModalWaiting, this);
+            ModalWaitPane = UUIPackage::CreateObjectFromURL(UFairyApplication::GetUIConfig().GlobalModalWaiting, this);
             ModalWaitPane->SetSortingOrder(INT_MAX);
         }
 
@@ -370,7 +370,7 @@ void UGRoot::ShowTooltips(const FString& Text)
 {
     if (DefaultTooltipWin == nullptr)
     {
-        const FString& resourceURL = FUIConfig::Config.TooltipsWin;
+        const FString& resourceURL = UFairyApplication::GetUIConfig().TooltipsWin;
         if (resourceURL.IsEmpty())
         {
             UE_LOG(LogFairyGUI, Warning, TEXT("UIConfig.tooltipsWin not defined"));

@@ -8,6 +8,7 @@
 #include "Tween/EaseType.h"
 #include "Tween/TweenerHandle.h"
 #include "Event/EventContext.h"
+#include "UI/UIConfig.h"
 #include "FairyBlueprintLibrary.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FTweenUpdateDynDelegate, const FTweenValue&, Value, const FTweenValue&, DeltaValue);
@@ -18,12 +19,6 @@ class FAIRYGUI_API UFairyBlueprintLibrary : public UBlueprintFunctionLibrary
     GENERATED_BODY()
 
 public:
-    UFUNCTION(BlueprintPure, Category = "FairyGUI")
-    static const FUIConfig& GetUIConfig();
-
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static void SetUIConfig(const FUIConfig& InConfig);
-
     UFUNCTION(BlueprintPure, Category = "FairyGUI|Variant")
     static bool GetVariantAsBool(UPARAM(ref) FNVariant& InVariant);
 

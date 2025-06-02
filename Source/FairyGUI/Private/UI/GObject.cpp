@@ -879,9 +879,9 @@ void UGObject::OnTouchMoveHandler(UEventContext* Context)
     {
         int32 sensitivity;
         if (FPlatformMisc::DesktopTouchScreen())
-            sensitivity = FUIConfig::Config.ClickDragSensitivity;
+            sensitivity = UFairyApplication::GetUIConfig().ClickDragSensitivity;
         else
-            sensitivity = FUIConfig::Config.TouchDragSensitivity;
+            sensitivity = UFairyApplication::GetUIConfig().TouchDragSensitivity;
         if (FMath::Abs(DragTouchStartPos.X - Context->GetPointerPosition().X) < sensitivity
             && FMath::Abs(DragTouchStartPos.Y - Context->GetPointerPosition().Y) < sensitivity)
             return;

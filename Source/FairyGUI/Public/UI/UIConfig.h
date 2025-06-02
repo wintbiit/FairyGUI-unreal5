@@ -11,8 +11,6 @@ struct FAIRYGUI_API FUIConfig
     GENERATED_USTRUCT_BODY()
 
 public:
-    static FUIConfig Config;
-
     FUIConfig();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FairyGUI")

@@ -36,10 +36,10 @@ void UScrollPane::Setup(FByteBuffer* Buffer)
 {
     Owner = Cast<UGComponent>(GetOuter());
     Container = Owner->Container;
-    ScrollStep = FUIConfig::Config.DefaultScrollStep;
-    DecelerationRate = FUIConfig::Config.DefaultScrollDecelerationRate;
-    bTouchEffect = FUIConfig::Config.DefaultScrollTouchEffect;
-    bBouncebackEffect = FUIConfig::Config.DefaultScrollBounceEffect;
+    ScrollStep = UFairyApplication::GetUIConfig().DefaultScrollStep;
+    DecelerationRate = UFairyApplication::GetUIConfig().DefaultScrollDecelerationRate;
+    bTouchEffect = UFairyApplication::GetUIConfig().DefaultScrollTouchEffect;
+    bBouncebackEffect = UFairyApplication::GetUIConfig().DefaultScrollBounceEffect;
     bMouseWheelEnabled = true;
     PageSize.Set(0, 0);
 
@@ -94,14 +94,14 @@ void UScrollPane::Setup(FByteBuffer* Buffer)
     bDontClipMargin = (flags & 2048) != 0;
 
     if (scrollBarDisplay == EScrollBarDisplayType::Default)
-        scrollBarDisplay = FUIConfig::Config.DefaultScrollBarDisplay;
+        scrollBarDisplay = UFairyApplication::GetUIConfig().DefaultScrollBarDisplay;
 
     if (scrollBarDisplay != EScrollBarDisplayType::Hidden)
     {
         if (ScrollType == EScrollType::Both || ScrollType == EScrollType::Vertical)
         {
             
-            const FString& res = vtScrollBarRes.Len() == 0 ? FUIConfig::Config.VerticalScrollBar : vtScrollBarRes;
+            const FString& res = vtScrollBarRes.Len() == 0 ? UFairyApplication::GetUIConfig().VerticalScrollBar : vtScrollBarRes;
             if (res.Len() > 0)
             {
                 VtScrollBar = Cast<UGScrollBar>(UUIPackage::CreateObjectFromURL(res, Owner));
@@ -118,7 +118,7 @@ void UScrollPane::Setup(FByteBuffer* Buffer)
         }
         if (ScrollType == EScrollType::Both || ScrollType == EScrollType::Horizontal)
         {
-            const FString& res = hzScrollBarRes.Len() == 0 ? FUIConfig::Config.HorizontalScrollBar : hzScrollBarRes;
+            const FString& res = hzScrollBarRes.Len() == 0 ? UFairyApplication::GetUIConfig().HorizontalScrollBar : hzScrollBarRes;
             if (res.Len() > 0)
             {
                 HzScrollBar = Cast<UGScrollBar>(UUIPackage::CreateObjectFromURL(res, Owner));
@@ -1388,7 +1388,7 @@ void UScrollPane::OnTouchMove(UEventContext* Context)
     if (FPlatformMisc::DesktopTouchScreen())
         sensitivity = 8;
     else
-        sensitivity = FUIConfig::Config.TouchScrollSensitivity;
+        sensitivity = UFairyApplication::GetUIConfig().TouchScrollSensitivity;
 
     float diff;
     bool sv = false, sh = false;
@@ -1589,9 +1589,9 @@ void UScrollPane::OnTouchEnd(UEventContext* Context)
     if (flag)
     {
         TweenChange = endPos - TweenStart;
-        if (TweenChange.X < -FUIConfig::Config.TouchDragSensitivity || TweenChange.Y < -FUIConfig::Config.TouchDragSensitivity)
+        if (TweenChange.X < -UFairyApplication::GetUIConfig().TouchDragSensitivity || TweenChange.Y < -UFairyApplication::GetUIConfig().TouchDragSensitivity)
             Owner->DispatchEvent(FUIEvents::PullDownRelease);
-        else if (TweenChange.X > FUIConfig::Config.TouchDragSensitivity || TweenChange.Y > FUIConfig::Config.TouchDragSensitivity)
+        else if (TweenChange.X > UFairyApplication::GetUIConfig().TouchDragSensitivity || TweenChange.Y > UFairyApplication::GetUIConfig().TouchDragSensitivity)
             Owner->DispatchEvent(FUIEvents::PullUpRelease);
 
         if (HeaderLockedSize > 0 && endPos.Component(RefreshBarAxis) == 0)
