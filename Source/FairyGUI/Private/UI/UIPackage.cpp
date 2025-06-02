@@ -302,11 +302,11 @@ void UUIPackage::Load(FByteBuffer* Buffer)
     cnt = Buffer->ReadShort();
     for (int32 i = 0; i < cnt; i++)
     {
-        TMap<FString, FString> info;
-        info.Add("id", Buffer->ReadS());
-        info.Add("name", Buffer->ReadS());
+        FUIPackageDependency Dependency;
+        Dependency.Id = Buffer->ReadS();
+        Dependency.Name = Buffer->ReadS();
 
-        Dependencies.Push(info);
+        Dependencies.Push(Dependency);
     }
 
     bool branchIncluded = false;

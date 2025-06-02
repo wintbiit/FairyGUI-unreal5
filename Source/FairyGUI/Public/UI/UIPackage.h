@@ -9,6 +9,18 @@ class UGObject;
 class FByteBuffer;
 class UUIPackageAsset;
 
+USTRUCT(BlueprintType)
+struct FUIPackageDependency
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FairyGUI")
+    FString Id;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FairyGUI")
+    FString Name;
+};
+
 UCLASS(BlueprintType)
 class FAIRYGUI_API UUIPackage : public UObject
 {
@@ -70,6 +82,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     const FString& GetName() const { return Name; }
 
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
+    TArray<FString> GetBranches() const { return Branches; }
+
+    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
+    TArray<FUIPackageDependency> GetDependencies() const { return Dependencies; }
+
     TSharedPtr<FPackageItem> GetItem(const FString& ResourceID) const;
     TSharedPtr<FPackageItem> GetItemByName(const FString& ResourceName);
     void* GetItemAsset(const TSharedPtr<FPackageItem>& Item);
@@ -86,20 +104,20 @@ private:
     void LoadSound(const TSharedPtr<FPackageItem>& Item);
 
 private:
+    
     FString ID;
     FString Name;
     FString AssetPath;
-    UPROPERTY(Transient)
-    UUIPackageAsset* Asset;
-
     TArray<TSharedPtr<FPackageItem>> Items;
     TMap<FString, TSharedPtr<FPackageItem>> ItemsByID;
     TMap<FString, TSharedPtr<FPackageItem>> ItemsByName;
     TMap<FString, struct FAtlasSprite*> Sprites;
     FString CustomID;
-    TArray<TMap<FString, FString>> Dependencies;
     TArray<FString> Branches;
     int32 BranchIndex;
+    TArray<FUIPackageDependency> Dependencies;
+    UPROPERTY(Transient)
+    UUIPackageAsset* Asset;
 
     friend class FPackageItem;
     friend class UFairyApplication;
