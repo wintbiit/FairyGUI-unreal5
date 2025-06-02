@@ -16,9 +16,6 @@ public:
     virtual ~UDragDropManager() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    UGLoader* GetAgent() const { return Agent; }
-
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     bool IsDragging() const { return Agent->GetParent() != nullptr; }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (AutoCreateRefTerm="InSourceData"))
@@ -33,6 +30,6 @@ private:
     void OnDragEnd(UEventContext* Context);
 
     UPROPERTY(Transient)
-    UGLoader* Agent;
+    TObjectPtr<UGLoader> Agent;
     FNVariant UserData;
 };

@@ -122,7 +122,7 @@ int32 UFairyApplication::GetTouchCount() const
 UGObject* UFairyApplication::GetObjectUnderPoint(const FVector2D& ScreenspacePosition)
 {
     TArray<TSharedRef<SWindow>> Windows;
-    Windows.Add(ViewportClient->GetWindow().ToSharedRef());
+    Windows.Add(GetViewportClient()->GetWindow().ToSharedRef());
     FWidgetPath WidgetPath = FSlateApplication::Get().LocateWindowUnderMouse(ScreenspacePosition, Windows, false);
 
     if (WidgetPath.IsValid())
@@ -157,19 +157,13 @@ void UFairyApplication::SetSoundEnabled(bool bEnabled)
     bSoundEnabled = bEnabled;
 }
 
-void UFairyApplication::SetSoundVolumeScale(float VolumnScale)
+void UFairyApplication::SetSoundVolumeScale(float VolumeScale)
 {
-    SoundVolumeScale = VolumnScale;
+    SoundVolumeScale = VolumeScale;
 }
 
 void UFairyApplication::Initialize(FSubsystemCollectionBase& Collection)
 {
-    ViewportClient = GetWorld()->GetGameViewport();
-    if (ViewportClient == nullptr)
-        return;
-
-    ViewportWidget = ViewportClient->GetGameViewportWidget();
-
     DragDropManager = NewObject<UDragDropManager>(this);
     DragDropManager->CreateAgent();
 
@@ -426,8 +420,9 @@ FReply UFairyApplication::OnWidgetMouseButtonDown(const TSharedRef<SWidget>& Wid
 
     FTouchInfo* TouchInfo = GetTouchInfo(MouseEvent);
 
-    UGObject* InitialGObject = nullptr;
+    const UGObject* InitialGObject = nullptr;
     TSharedPtr<SWidget> Ptr = Widget;
+    const TSharedPtr<SWidget> ViewportWidget = GetViewportWidget();
     while (Ptr.IsValid() && Ptr != ViewportWidget)
     {
         TouchInfo->DownPath.Add(Ptr);
@@ -475,6 +470,7 @@ FReply UFairyApplication::OnWidgetMouseButtonUp(const TSharedRef<SWidget>& Widge
     if (!TouchInfo->bClickCancelled)
     {
         TSharedPtr<SWidget> Ptr = Widget;
+        const TSharedPtr<SWidget> ViewportWidget = GetViewportWidget();
         while (Ptr.IsValid() && Ptr != ViewportWidget)
         {
             if (TouchInfo->DownPath.Contains(Ptr))

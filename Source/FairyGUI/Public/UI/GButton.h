@@ -75,7 +75,7 @@ public:
     static const FString SELECTED_DISABLED;
 
 protected:
-    virtual void ConstructExtension(FByteBuffer* Buffer);
+    virtual void ConstructExtension(FByteBuffer* Buffer) override;
     virtual void SetupAfterAdd(FByteBuffer* Buffer, int32 BeginPos) override;
 
     virtual void HandleControllerChanged(UGController* Controller) override;
@@ -84,18 +84,22 @@ protected:
     void SetCurrentState();
 
 private:
-    void OnRollOverHandler(UEventContext* Context);
-    void OnRollOutHandler(UEventContext* Context);
-    void OnTouchBeginHandler(UEventContext* Context);
-    void OnTouchEndHandler(UEventContext* Context);
+    virtual void OnRollOverHandler(UEventContext* Context) override;
+    virtual void OnRollOutHandler(UEventContext* Context) override;
+    virtual void OnTouchBeginHandler(UEventContext* Context) override;
+    virtual void OnTouchEndHandler(UEventContext* Context) override;
     void OnClickHandler(UEventContext* Context);
-    void OnRemovedFromStageHandler(UEventContext* Context);
+    virtual void OnRemovedFromStageHandler(UEventContext* Context) override;
 
     EButtonMode Mode;
-    UGObject* TitleObject;
-    UGObject* IconObject;
-    UGController* ButtonController;
-    UGController* RelatedController;
+    UPROPERTY()
+    TObjectPtr<UGObject> TitleObject;
+    UPROPERTY()
+    TObjectPtr<UGObject> IconObject;
+    UPROPERTY()
+    TObjectPtr<UGController> ButtonController;
+    UPROPERTY()
+    TObjectPtr<UGController> RelatedController;
     FString RelatedPageID;
     FString Title;
     FString SelectedTitle;

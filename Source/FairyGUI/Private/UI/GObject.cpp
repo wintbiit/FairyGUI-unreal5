@@ -584,14 +584,6 @@ UGRoot* UGObject::GetUIRoot() const
     return GetApp()->GetUIRoot();
 }
 
-UFairyApplication* UGObject::GetApp() const
-{
-    if (CachedApp == nullptr)
-        const_cast<UGObject*>(this)->CachedApp = UFairyApplication::Get(const_cast<UGObject*>(this));
-
-    return CachedApp;
-}
-
 UWorld* UGObject::GetWorld() const
 {
     if (!HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject))
@@ -631,7 +623,7 @@ void UGObject::SetProp(EObjectPropID PropID, const FNVariant& InValue)
     }
 }
 
-bool UGObject::DispatchEvent(const FName& EventType, const FNVariant& Data)
+bool UGObject::DispatchEvent(const FName& EventType, const FNVariant& Data) const
 {
     return GetApp()->DispatchEvent(EventType, DisplayObject.ToSharedRef(), Data);
 }
@@ -851,7 +843,7 @@ void UGObject::DragBegin(int32 UserIndex, int32 PointerIndex)
     DraggingObject = this;
     bDragTesting = false;
 
-    GetApp()->AddMouseCaptor(UserIndex, PointerIndex, this);
+   GetApp()->AddMouseCaptor(UserIndex, PointerIndex, this);
 
     OnTouchMove.AddUniqueDynamic(this, &UGObject::OnTouchMoveHandler);
     OnTouchEnd.AddUniqueDynamic(this, &UGObject::OnTouchEndHandler);

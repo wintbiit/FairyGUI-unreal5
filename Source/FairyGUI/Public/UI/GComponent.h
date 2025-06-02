@@ -222,11 +222,12 @@ private:
 
     void BuildNativeDisplayList(bool bImmediatelly = false);
 
-    void OnAddedToStageHandler(UEventContext* Context);
-    void OnRemovedFromStageHandler(UEventContext* Context);
+    virtual void OnAddedToStageHandler(UEventContext* Context);
+    virtual void OnRemovedFromStageHandler(UEventContext* Context);
 
     int32 SortingChildCount;
-    UGController* ApplyingController;
+    UPROPERTY(Transient)
+    TObjectPtr<UGController> ApplyingController;
 
     FTimerHandle UpdateBoundsTimerHandle;
     FTimerHandle BuildDisplayListTimerHandle;

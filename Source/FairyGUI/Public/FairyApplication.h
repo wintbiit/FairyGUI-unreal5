@@ -17,7 +17,7 @@ class UGRoot;
 class UDragDropManager;
 
 UCLASS(BlueprintType)
-class FAIRYGUI_API UFairyApplication : public UGameInstanceSubsystem
+class FAIRYGUI_API UFairyApplication : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -54,8 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="FariGUI")
 	static UFairyApplication* Get(const UObject* WorldContext)
 	{
-		const UGameInstance* GI = UGameplayStatics::GetGameInstance(WorldContext);
-		return GI ? GI->GetSubsystem<UFairyApplication>() : nullptr;
+		return WorldContext ? WorldContext->GetWorld()->GetSubsystem<UFairyApplication>() : nullptr;
 	}
 
 	UFairyApplication();
@@ -133,8 +132,8 @@ public:
 	FReply OnWidgetMouseWheel(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry,
 	                          const FPointerEvent& MouseEvent);
 
-	UGameViewportClient* GetViewportClient() const { return ViewportClient; }
-	const TSharedPtr<SWidget>& GetViewportWidget() const { return ViewportWidget; }
+	UGameViewportClient* GetViewportClient() const { return GetWorld()->GetGameViewport(); }
+	TSharedPtr<SWidget> GetViewportWidget() const { return GetViewportClient()->GetGameViewportWidget(); }
 
 	void CallAfterSlateTick(FSimpleDelegate Callback);
 
@@ -162,14 +161,11 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UGRoot> UIRoot;
 	UPROPERTY(Transient)
-	UDragDropManager* DragDropManager;
+	TObjectPtr<UDragDropManager> DragDropManager;
 	UPROPERTY(Transient)
-	TArray<UEventContext*> EventContextPool;
-	UPROPERTY(Transient)
-	TObjectPtr<UGameViewportClient> ViewportClient;
+	TArray<TObjectPtr<UEventContext>> EventContextPool;
 
 	TSharedPtr<IInputProcessor> InputProcessor;
-	TSharedPtr<SWidget> ViewportWidget;
 	TIndirectArray<FTouchInfo> Touches;
 	FTouchInfo* LastTouch;
 	bool bNeedCheckPopups;

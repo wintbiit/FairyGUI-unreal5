@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FairyApplication.h"
 #include "Relations.h"
 #include "PackageItem.h"
 #include "UIConfig.h"
@@ -225,9 +226,6 @@ public:
     UGRoot* GetUIRoot() const;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    UFairyApplication* GetApp() const;
-
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     bool OnStage() const;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
@@ -253,7 +251,7 @@ public:
     virtual void ConstructFromResource();
 
 public:
-    bool DispatchEvent(const FName& EventType, const FNVariant& Data = FNVariant::Null);
+    bool DispatchEvent(const FName& EventType, const FNVariant& Data = FNVariant::Null) const;
     bool HasEventListener(const FName& EventType) const;
     void InvokeEventDelegate(UEventContext* Context);
     FGUIEventMDelegate& On(const FName& EventType);
@@ -325,6 +323,11 @@ public:
     bool bUnderConstruct;
     bool bGearLocked;
 
+    UFairyApplication* GetApp() const
+    {
+        return UFairyApplication::Get(this);
+    }
+
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     static UGObject* GetDraggingObject() { return DraggingObject.Get(); }
 
@@ -371,20 +374,20 @@ private:
     void UpdateTransform();
 
     UFUNCTION()
-    void OnRollOverHandler(UEventContext* Context);
+    virtual void OnRollOverHandler(UEventContext* Context);
     UFUNCTION()
-    void OnRollOutHandler(UEventContext* Context);
+    virtual void OnRollOutHandler(UEventContext* Context);
 
     void InitDrag();
     void DragBegin(int32 UserIndex, int32 PointerIndex);
     void DragEnd();
 
     UFUNCTION()
-    void OnTouchBeginHandler(UEventContext* Context);
+    virtual void OnTouchBeginHandler(UEventContext* Context);
     UFUNCTION()
     void OnTouchMoveHandler(UEventContext* Context);
     UFUNCTION()
-    void OnTouchEndHandler(UEventContext* Context);
+    virtual void OnTouchEndHandler(UEventContext* Context);
 
     uint8 bInternalVisible : 1;
     uint8 bHandlingController : 1;
@@ -398,8 +401,8 @@ private:
     FVector2D DragTouchStartPos;
     TOptional<FBox2D> DragBounds;
     uint8 bDragTesting : 1;
-    UGTreeNode* TreeNode;
-    UFairyApplication* CachedApp;
+    UPROPERTY(Transient)
+    TObjectPtr<UGTreeNode> TreeNode;
 
     struct FUnifiedEventDelegate
     {
