@@ -169,8 +169,10 @@ void UFairyApplication::Initialize(FSubsystemCollectionBase& Collection)
 
     PostTickDelegateHandle = FSlateApplication::Get().OnPostTick().AddUObject(this, &UFairyApplication::OnSlatePostTick);
 
-    InputProcessor = MakeShareable(new FInputProcessor(this));
-    FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor);
+    if (!InputProcessor.IsValid()) {
+        InputProcessor = MakeShareable(new FInputProcessor(this));
+        FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor);
+    }
     
     Super::Initialize(Collection);
 }
@@ -287,10 +289,13 @@ UEventContext* UFairyApplication::BorrowEventContext()
     return Context;
 }
 
-void UFairyApplication::ReturnEventContext(UEventContext* Context)
-{
-    Context->Data.Reset();
-    EventContextPool.Add(Context);
+void UFairyApplication::ReturnEventContext(UEventContext* Context) {
+    constexpr int32 MaxPoolSize = 50;
+    if (EventContextPool.Num() < MaxPoolSize) {
+        EventContextPool.Add(Context);
+    } else {
+        Context->MarkAsGarbage();
+    }
 }
 
 void UFairyApplication::AddMouseCaptor(int32 InUserIndex, int32 InPointerIndex, UGObject* InTarget)
