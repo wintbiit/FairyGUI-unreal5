@@ -28,7 +28,7 @@ class FAIRYGUI_API UGObject : public UObject
 
 public:
     UGObject();
-    virtual ~UGObject();
+    virtual ~UGObject() override;
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     float GetX() const { return Position.X; };
@@ -223,7 +223,7 @@ public:
     void SetParentToRoot();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    UGRoot* GetUIRoot() const;
+    UGRoot* GetUIRoot();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     bool OnStage() const;
@@ -251,7 +251,7 @@ public:
     virtual void ConstructFromResource();
 
 public:
-    bool DispatchEvent(const FName& EventType, const FNVariant& Data = FNVariant::Null) const;
+    bool DispatchEvent(const FName& EventType, const FNVariant& Data = FNVariant::Null);
     bool HasEventListener(const FName& EventType) const;
     void InvokeEventDelegate(UEventContext* Context);
     FGUIEventMDelegate& On(const FName& EventType);
@@ -323,9 +323,14 @@ public:
     bool bUnderConstruct;
     bool bGearLocked;
 
-    UFairyApplication* GetApp() const
+    UFairyApplication* GetApp()
     {
-        return UFairyApplication::Get(this);
+        if (!CachedApplication)
+        {
+            CachedApplication = UFairyApplication::Get(this);
+        }
+
+        return CachedApplication;
     }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
@@ -403,6 +408,8 @@ private:
     uint8 bDragTesting : 1;
     UPROPERTY(Transient)
     TObjectPtr<UGTreeNode> TreeNode;
+    UPROPERTY(Transient)
+    TObjectPtr<UFairyApplication> CachedApplication;
 
     struct FUnifiedEventDelegate
     {

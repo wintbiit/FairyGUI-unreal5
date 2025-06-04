@@ -579,7 +579,7 @@ bool UGObject::OnStage() const
     return SDisplayObject::IsWidgetOnStage(DisplayObject);
 }
 
-UGRoot* UGObject::GetUIRoot() const
+UGRoot* UGObject::GetUIRoot()
 {
     return GetApp()->GetUIRoot();
 }
@@ -623,7 +623,7 @@ void UGObject::SetProp(EObjectPropID PropID, const FNVariant& InValue)
     }
 }
 
-bool UGObject::DispatchEvent(const FName& EventType, const FNVariant& Data) const
+bool UGObject::DispatchEvent(const FName& EventType, const FNVariant& Data)
 {
     return GetApp()->DispatchEvent(EventType, DisplayObject.ToSharedRef(), Data);
 }

@@ -66,6 +66,10 @@ FTextBlockStyle FNTextFormat::GetStyle() const
         if (Font == nullptr)
         {
             Font = FindFontFace(*FontFace);
+            if (Font != nullptr)
+            {
+                UFairyApplication::Fonts.Add(FontFace, Font);
+            }
         }
         if (Font != nullptr)
         {
@@ -76,7 +80,6 @@ FTextBlockStyle FNTextFormat::GetStyle() const
         }
         else
         {
-            UE_LOG(LogFairyGUI, Log, TEXT("Font '%s' not found, using default font."), *FontFace);
             FSlateFontInfo SlateFont = FCoreStyle::GetDefaultFontStyle(*FontFace, Size * 0.75f);
             SlateFont.OutlineSettings.OutlineSize = OutlineSize;
             SlateFont.OutlineSettings.OutlineColor = OutlineColor;

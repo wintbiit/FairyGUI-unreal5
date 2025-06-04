@@ -132,8 +132,16 @@ public:
 	FReply OnWidgetMouseWheel(const TSharedRef<SWidget>& Widget, const FGeometry& MyGeometry,
 	                          const FPointerEvent& MouseEvent);
 
-	UGameViewportClient* GetViewportClient() const { return GetWorld()->GetGameViewport(); }
-	TSharedPtr<SWidget> GetViewportWidget() const { return GetViewportClient()->GetGameViewportWidget(); }
+	UGameViewportClient* GetViewportClient()
+	{
+		if (!CachedViewportClient)
+		{
+			CachedViewportClient = GetWorld()->GetGameViewport();
+		}
+
+		return CachedViewportClient;
+	}
+	TSharedPtr<SWidget> GetViewportWidget() { return GetViewportClient()->GetGameViewportWidget(); }
 
 	void CallAfterSlateTick(FSimpleDelegate Callback);
 
@@ -164,6 +172,8 @@ private:
 	TObjectPtr<UDragDropManager> DragDropManager;
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UEventContext>> EventContextPool;
+	UPROPERTY(Transient)
+	TObjectPtr<UGameViewportClient> CachedViewportClient;
 
 	TSharedPtr<IInputProcessor> InputProcessor;
 	TIndirectArray<FTouchInfo> Touches;
