@@ -91,10 +91,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     TArray<FString> GetBranches() const { return Branches; }
-
-    UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    TArray<FUIPackageDependency> GetDependencies() const { return Dependencies; }
-
+    
     TSharedPtr<FPackageItem> GetItem(const FString& ResourceID) const;
     TSharedPtr<FPackageItem> GetItemByName(const FString& ResourceName);
     void* GetItemAsset(const TSharedPtr<FPackageItem>& Item);
@@ -113,7 +110,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
     int32 BranchIndex;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
-    TArray<FUIPackageDependency> Dependencies;
+    TMap<FString, FPrimaryAssetId> Dependencies;
 
 #if WITH_EDITORONLY_DATA
     UPROPERTY(VisibleAnywhere, Instanced, Category=ImportSettings)

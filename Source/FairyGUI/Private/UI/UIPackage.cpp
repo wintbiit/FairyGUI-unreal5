@@ -320,11 +320,9 @@ void UUIPackage::Load(FByteBuffer* Buffer)
     cnt = Buffer->ReadShort();
     for (int32 i = 0; i < cnt; i++)
     {
-        FUIPackageDependency Dependency;
-        Dependency.AssetId = FPrimaryAssetId(UIPackageType, *Buffer->ReadString());
-        Dependency.Name = Buffer->ReadS();
-
-        Dependencies.Push(Dependency);
+        auto PkgId = Buffer->ReadS();
+        auto PkgName = Buffer->ReadS();
+        Dependencies.Add(PkgName, FPrimaryAssetId(UIPackageType, *PkgId));
     }
 
     bool branchIncluded = false;
