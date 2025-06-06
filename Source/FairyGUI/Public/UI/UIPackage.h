@@ -15,14 +15,14 @@ struct FUIPackageDependency
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FairyGUI")
-    FString Id;
+    FPrimaryAssetId AssetId;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FairyGUI")
     FString Name;
 };
 
 UCLASS(BlueprintType)
-class FAIRYGUI_API UUIPackage : public UPrimaryDataAsset
+class FAIRYGUI_API UUIPackage final : public UPrimaryDataAsset
 {
     GENERATED_BODY()
 
@@ -75,10 +75,12 @@ public:
 public:
     UUIPackage();
     virtual  ~UUIPackage() override;
+
+    static FPrimaryAssetType UIPackageType;
     
     virtual FPrimaryAssetId GetPrimaryAssetId() const override
     {
-        return FPrimaryAssetId(TEXT("UIPackage"), *GetID());
+        return FPrimaryAssetId(UIPackageType, *ID);
     }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
@@ -112,8 +114,6 @@ public:
     int32 BranchIndex;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
     TArray<FUIPackageDependency> Dependencies;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
-    TArray<FPrimaryAssetId> DependentPackages;
 
 #if WITH_EDITORONLY_DATA
     UPROPERTY(VisibleAnywhere, Instanced, Category=ImportSettings)
