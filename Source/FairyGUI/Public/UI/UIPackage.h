@@ -22,7 +22,7 @@ struct FUIPackageDependency
 };
 
 UCLASS(BlueprintType)
-class FAIRYGUI_API UUIPackage : public UObject
+class FAIRYGUI_API UUIPackage : public UPrimaryDataAsset
 {
     GENERATED_BODY()
 
@@ -75,6 +75,11 @@ public:
 public:
     UUIPackage();
     virtual  ~UUIPackage() override;
+    
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override
+    {
+        return FPrimaryAssetId(TEXT("UIPackage"), *GetID());
+    }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
     const FString& GetID() const { return ID; }
@@ -95,6 +100,28 @@ public:
     UGObject* CreateObject(const FString& ResourceName, UObject* WorldContextObject);
     UGObject* CreateObject(const TSharedPtr<FPackageItem>& Item, UObject* WorldContextObject);
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    FString ID;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    FString Name;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    FString CustomID;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    TArray<FString> Branches;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    int32 BranchIndex;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    TArray<FUIPackageDependency> Dependencies;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
+    TArray<FPrimaryAssetId> DependentPackages;
+
+#if WITH_EDITORONLY_DATA
+    UPROPERTY(VisibleAnywhere, Instanced, Category=ImportSettings)
+    TObjectPtr<UAssetImportData> AssetImportData;
+
+    virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
+#endif
+    
 private:
     void Load(FByteBuffer* Buffer);
     void LoadAtlas(const TSharedPtr<FPackageItem>& Item);
@@ -102,23 +129,13 @@ private:
     void LoadMovieClip(const TSharedPtr<FPackageItem>& Item);
     void LoadFont(const TSharedPtr<FPackageItem>& Item);
     void LoadSound(const TSharedPtr<FPackageItem>& Item);
-
-private:
     
-    FString ID;
-    FString Name;
-    FString AssetPath;
     TArray<TSharedPtr<FPackageItem>> Items;
     TMap<FString, TSharedPtr<FPackageItem>> ItemsByID;
     TMap<FString, TSharedPtr<FPackageItem>> ItemsByName;
     TMap<FString, struct FAtlasSprite*> Sprites;
-    FString CustomID;
-    TArray<FString> Branches;
-    int32 BranchIndex;
-    TArray<FUIPackageDependency> Dependencies;
-    UPROPERTY(Transient)
-    UUIPackageAsset* Asset;
 
     friend class FPackageItem;
     friend class UFairyApplication;
+    friend class UUIPackageFactory;
 };
