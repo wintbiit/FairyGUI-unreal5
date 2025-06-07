@@ -50,8 +50,7 @@ void UUIPackage::SetBranch(const FString& InBranch)
 
 FString UUIPackage::GetVar(const FString& VarKey)
 {
-    FString* Value = UFairyApplication::Vars.Find(VarKey);
-    if (Value != nullptr)
+    if (FString* Value = UFairyApplication::Vars.Find(VarKey); Value != nullptr)
         return *Value;
     else
         return G_EMPTY_STRING;
@@ -73,6 +72,11 @@ UUIPackage* UUIPackage::AddPackageByPath(const FString& InAssetPath)
 UUIPackage* UUIPackage::AddPackage(UUIPackageAsset* InAsset)
 {
     UUIPackage* Pkg = UFairyApplication::PackageInstByID.FindRef(InAsset->GetPathName());
+    if (Pkg != nullptr)
+    {
+        return Pkg;
+    }
+    
     FByteBuffer Buffer(InAsset->Data.GetData(), 0, InAsset->Data.Num(), false);
 
     Pkg = NewObject<UUIPackage>();
