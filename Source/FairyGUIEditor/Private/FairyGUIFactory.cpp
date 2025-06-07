@@ -11,7 +11,7 @@ UFairyGUIFactory::UFairyGUIFactory()
     bEditorImport = true;
     bCreateNew = false;
     bText = false;
-    // Formats.Add(TEXT("fui;FairyGUI package files"));
+    Formats.Add(TEXT("fui;FairyGUI package files"));
 }
 
 UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, const TCHAR* Type, const uint8*& Buffer, const uint8* BufferEnd, FFeedbackContext* Warn)

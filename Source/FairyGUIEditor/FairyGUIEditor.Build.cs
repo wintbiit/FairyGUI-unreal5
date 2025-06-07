@@ -25,7 +25,7 @@ public class FairyGUIEditor : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "UnrealEd", "AssetDefinition"
+				"Core",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

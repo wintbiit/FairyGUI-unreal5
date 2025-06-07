@@ -76,13 +76,13 @@ UUIPackage* UUIPackage::AddPackage(UUIPackageAsset* InAsset)
     FByteBuffer Buffer(InAsset->Data.GetData(), 0, InAsset->Data.Num(), false);
 
     Pkg = NewObject<UUIPackage>();
-    // Pkg->Asset = InAsset;
-    // Pkg->AssetPath = InAsset->GetPathName();
+    Pkg->Asset = InAsset;
+    Pkg->AssetPath = InAsset->GetPathName();
     Pkg->Load(&Buffer);
 
     UFairyApplication::PackageList.Add(Pkg);
     UFairyApplication::PackageInstByID.Add(Pkg->ID, Pkg);
-    // UFairyApplication::PackageInstByID.Add(Pkg->AssetPath, Pkg);
+    UFairyApplication::PackageInstByID.Add(Pkg->AssetPath, Pkg);
     UFairyApplication::PackageInstByName.Add(Pkg->Name, Pkg);
 
     return Pkg;
@@ -98,7 +98,7 @@ void UUIPackage::RemovePackage(const FString& IDOrName)
     {
         UFairyApplication::PackageList.Remove(Pkg);
         UFairyApplication::PackageInstByID.Remove(Pkg->ID);
-        // UFairyApplication::PackageInstByID.Remove(Pkg->AssetPath);
+        UFairyApplication::PackageInstByID.Remove(Pkg->AssetPath);
         UFairyApplication::PackageInstByName.Remove(Pkg->Name);
     }
     else
@@ -270,28 +270,11 @@ void UUIPackage::RegisterFont(const FString& FontFace, UFont* Font, UObject* Wor
     UFairyApplication::Get(WorldContextObject)->Fonts.Add(FontFace, Font);
 }
 
-#if WITH_EDITORONLY_DATA
-void UUIPackage::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const
-{
-    if (AssetImportData)
-    {
-        Context.AddTag(FAssetRegistryTag(SourceFileTagName(),
-            AssetImportData->GetSourceData().ToJson(),
-            FAssetRegistryTag::TT_Hidden));
-#if WITH_EDITOR
-        AssetImportData->AppendAssetRegistryTags(Context);
-#endif
-    }
-
-    Super::GetAssetRegistryTags(Context);
-}
-#endif
-
 void UUIPackage::Load(FByteBuffer* Buffer)
 {
     if (Buffer->ReadUint() != 0x46475549)
     {
-        // UE_LOG(LogFairyGUI, Error, TEXT("not valid package format in %d '%s'"), Buffer->ReadUint(), *AssetPath);
+        UE_LOG(LogFairyGUI, Error, TEXT("not valid package format in %d '%s'"), Buffer->ReadUint(), *AssetPath);
         return;
     }
 
@@ -324,7 +307,6 @@ void UUIPackage::Load(FByteBuffer* Buffer)
         Dependency.Name = Buffer->ReadS();
 
         Dependencies.Push(Dependency);
-        DependentPackages.Add(FPrimaryAssetId(TEXT("UIPackage"), *Dependency.Id));
     }
 
     bool branchIncluded = false;
@@ -343,8 +325,8 @@ void UUIPackage::Load(FByteBuffer* Buffer)
 
     Buffer->Seek(indexTablePos, 1);
 
-    // FString path = FPaths::GetPath(AssetPath);
-    // FString fileName = FPaths::GetBaseFilename(AssetPath);
+    FString path = FPaths::GetPath(AssetPath);
+    FString fileName = FPaths::GetBaseFilename(AssetPath);
 
     cnt = Buffer->ReadShort();
     for (int32 i = 0; i < cnt; i++)
@@ -417,16 +399,16 @@ void UUIPackage::Load(FByteBuffer* Buffer)
         case EPackageItemType::Sound:
         case EPackageItemType::Misc:
         {
-            // FString file = fileName + "_" + FPaths::GetBaseFilename(pii->File);
-            // pii->File = path + "/" + file + "." + file;
-            // break;
+            FString file = fileName + "_" + FPaths::GetBaseFilename(pii->File);
+            pii->File = path + "/" + file + "." + file;
+            break;
         }
 
         case EPackageItemType::Spine:
         case EPackageItemType::DragonBones:
         {
-            // pii->File = path + pii->File;
-            // break;
+            pii->File = path + pii->File;
+            break;
         }
 
         default:

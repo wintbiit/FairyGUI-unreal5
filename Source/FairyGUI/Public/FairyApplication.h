@@ -107,10 +107,10 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	// virtual bool ShouldCreateSubsystem(UObject* Outer) const override
-	// {
-	// 	return GetWorld() && GetWorld()->IsGameWorld() && FSlateApplication::IsInitialized();
-	// }
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override
+	{
+		return GetWorld() && GetWorld()->IsGameWorld() && FSlateApplication::IsInitialized();
+	}
 
 	bool DispatchEvent(const FName& EventType, const TSharedRef<SWidget>& Initiator,
 	                   const FNVariant& Data = FNVariant::Null);
