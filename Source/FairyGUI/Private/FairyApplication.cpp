@@ -164,6 +164,11 @@ void UFairyApplication::SetSoundVolumeScale(float VolumeScale)
 
 void UFairyApplication::Initialize(FSubsystemCollectionBase& Collection)
 {
+    if (!FSlateApplication::IsInitialized())
+    {
+        return;
+    }
+
     DragDropManager = NewObject<UDragDropManager>(this);
     DragDropManager->CreateAgent();
 

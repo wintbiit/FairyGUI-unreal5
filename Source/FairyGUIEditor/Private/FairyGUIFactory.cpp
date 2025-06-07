@@ -40,6 +40,11 @@ UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParen
     }
     for (const TSharedPtr<FPackageItem>& PackageItem : Package->Items)
     {
+        if (PackageItem->File.IsEmpty())
+        {
+            continue; // Skip items without a file path
+        }
+        
         UIAsset->Resources.Add(PackageItem->File, TSoftObjectPtr<UObject>(FSoftObjectPath(PackageItem->File)));
     }
 
