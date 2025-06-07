@@ -4,6 +4,8 @@
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
 #include "UIPackageAsset.h"
+#include "UI/PackageItem.h"
+#include "UI/UIPackage.h"
 
 UFairyGUIFactory::UFairyGUIFactory()
 {
@@ -23,6 +25,26 @@ UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParen
     UIAsset->Data.AddUninitialized(InDataSize);
     FMemory::Memcpy(UIAsset->Data.GetData(), Buffer, InDataSize);
 
+    const UUIPackage* Package = UUIPackage::AddPackage(UIAsset);
+    if (!Package)
+    {
+        Warn->Log(ELogVerbosity::Error, TEXT("Failed to create UIPackage from asset data."));
+        return nullptr;
+    }
+
+    UIAsset->Name = Package->GetName();
+    UIAsset->ID = Package->GetID();
+    for (auto [Id, Name] : Package->GetDependencies())
+    {
+        UIAsset->Dependencies.Add(Name, FPrimaryAssetId(UUIPackageAsset::AssetType, *Id));
+    }
+    for (const TSharedPtr<FPackageItem>& PackageItem : Package->Items)
+    {
+        UIAsset->Resources.Add(PackageItem->File, TSoftObjectPtr<UObject>(FSoftObjectPath(PackageItem->File)));
+    }
+
+    UUIPackage::RemoveAllPackages();
+    
     if (!UIAsset->AssetImportData)
     {
         UIAsset->AssetImportData = NewObject<UAssetImportData>(UIAsset, UAssetImportData::StaticClass());
@@ -34,8 +56,7 @@ UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParen
 
 bool UFairyGUIFactory::CanReimport(UObject* Obj, TArray<FString>& OutFilenames)
 {
-    UUIPackageAsset* UIAsset = Cast<UUIPackageAsset>(Obj);
-    if (UIAsset && UIAsset->AssetImportData)
+    if (const UUIPackageAsset* UIAsset = Cast<UUIPackageAsset>(Obj); UIAsset && UIAsset->AssetImportData)
     {
         UIAsset->AssetImportData->ExtractFilenames(OutFilenames);
         return true;
@@ -45,8 +66,7 @@ bool UFairyGUIFactory::CanReimport(UObject* Obj, TArray<FString>& OutFilenames)
 
 void UFairyGUIFactory::SetReimportPaths(UObject* Obj, const TArray<FString>& NewReimportPaths)
 {
-    UUIPackageAsset* UIAsset = Cast<UUIPackageAsset>(Obj);
-    if (UIAsset && ensure(NewReimportPaths.Num() == 1))
+    if (const UUIPackageAsset* UIAsset = Cast<UUIPackageAsset>(Obj); UIAsset && ensure(NewReimportPaths.Num() == 1))
     {
         UIAsset->AssetImportData->UpdateFilenameOnly(NewReimportPaths[0]);
     }
@@ -67,13 +87,13 @@ EReimportResult::Type UFairyGUIFactory::Reimport(UObject* Obj)
         return EReimportResult::Failed;
     }
 
-    if (UFactory::StaticImportObject(
+    if (StaticImportObject(
         UIAsset->GetClass(),
         UIAsset->GetOuter(),
         *UIAsset->GetName(),
         RF_Public | RF_Standalone,
         *Filename,
-        NULL,
+        nullptr,
         this))
     {
         if (UIAsset->GetOuter())

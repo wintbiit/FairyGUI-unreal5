@@ -121,4 +121,5 @@ private:
 
     friend class FPackageItem;
     friend class UFairyApplication;
+    friend class UFairyGUIFactory;
 };

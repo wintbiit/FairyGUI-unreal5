@@ -35,6 +35,11 @@ bool FNTextFormat::EqualStyle(const FNTextFormat& AnotherFormat) const
 
 UFont* FindFontFace(const FString& Name)
 {
+    if (Name.IsEmpty())
+    {
+        return nullptr;
+    }
+    
     TArray PotentialPaths = {
         FString::Printf(TEXT("/Game/Fonts/%s"), *Name),
         FString::Printf(TEXT("/Game/Fonts/%s_Font"), *Name),
