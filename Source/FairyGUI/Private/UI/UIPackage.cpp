@@ -12,7 +12,6 @@
 #include "UI/UIObjectFactory.h"
 
 int32 UUIPackage::Constructing = 0;
-FPrimaryAssetType UUIPackage::UIPackageType(TEXT("UIPackage"));
 
 struct FAtlasSprite
 {
@@ -321,10 +320,11 @@ void UUIPackage::Load(FByteBuffer* Buffer)
     for (int32 i = 0; i < cnt; i++)
     {
         FUIPackageDependency Dependency;
-        Dependency.AssetId = FPrimaryAssetId(UIPackageType, *Buffer->ReadString());
+        Dependency.Id = Buffer->ReadS();
         Dependency.Name = Buffer->ReadS();
 
         Dependencies.Push(Dependency);
+        DependentPackages.Add(FPrimaryAssetId(TEXT("UIPackage"), *Dependency.Id));
     }
 
     bool branchIncluded = false;
