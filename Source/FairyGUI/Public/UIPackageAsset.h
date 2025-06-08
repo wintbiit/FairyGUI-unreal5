@@ -5,7 +5,7 @@
 #include "UIPackageAsset.generated.h"
 
 UCLASS()
-class FAIRYGUI_API UUIPackageAsset : public UPrimaryDataAsset
+class FAIRYGUI_API UUIPackageAsset final : public UPrimaryDataAsset
 {
     GENERATED_BODY()
 

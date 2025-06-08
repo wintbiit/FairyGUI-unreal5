@@ -15,7 +15,7 @@ class UUIPackage;
 class UNTexture;
 class UGComponent;
 
-class FAIRYGUI_API FPackageItem : public FGCObject, public TSharedFromThis<FPackageItem>
+class FAIRYGUI_API FPackageItem final : public FGCObject, public TSharedFromThis<FPackageItem>
 {
 public:
     FPackageItem();
