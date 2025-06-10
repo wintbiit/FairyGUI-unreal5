@@ -95,18 +95,21 @@ UUIPackage* UUIPackage::AddPackage(UUIPackageAsset* InAsset)
 void UUIPackage::RemovePackage(const FString& IDOrName)
 {
     UUIPackage* Pkg = GetPackageByName(IDOrName);
-    if (Pkg == nullptr)
+    if (!Pkg)
         Pkg = GetPackageByID(IDOrName);
 
-    if (Pkg != nullptr)
+    if (!Pkg)
     {
-        UFairyApplication::PackageList.Remove(Pkg);
-        UFairyApplication::PackageInstByID.Remove(Pkg->ID);
-        UFairyApplication::PackageInstByID.Remove(Pkg->AssetPath);
-        UFairyApplication::PackageInstByName.Remove(Pkg->Name);
-    }
-    else
         UE_LOG(LogFairyGUI, Error, TEXT("invalid package name or id: %s"), *IDOrName);
+        return;
+    }
+    const auto Name = Pkg->Name;
+    const auto ID = Pkg->ID;
+    const auto AssetPath = Pkg->AssetPath;
+    UFairyApplication::PackageList.Remove(Pkg);
+    UFairyApplication::PackageInstByID.Remove(AssetPath);
+    UFairyApplication::PackageInstByID.Remove(ID);
+    UFairyApplication::PackageInstByName.Remove(Name);
 }
 
 void UUIPackage::RemoveAllPackages()
@@ -116,36 +119,17 @@ void UUIPackage::RemoveAllPackages()
     UFairyApplication::PackageInstByName.Reset();
 }
 
-UUIPackage* UUIPackage::GetPackageByID(const FString& PackageID)
-{
-    auto it = UFairyApplication::PackageInstByID.Find(PackageID);
-    if (it != nullptr)
-        return *it;
-    else
-        return nullptr;
-}
-
-UUIPackage* UUIPackage::GetPackageByName(const FString& PackageName)
-{
-    auto it = UFairyApplication::PackageInstByName.Find(PackageName);
-    if (it != nullptr)
-        return *it;
-    else
-        return nullptr;
-}
-
 UGObject* UUIPackage::CreateObject(const FString& PackageName, const FString& ResourceName, UObject* WorldContextObject, TSubclassOf<UGObject> ClassType)
 {
-    UUIPackage* pkg = UUIPackage::GetPackageByName(PackageName);
-    if (pkg)
-        return pkg->CreateObject(ResourceName, WorldContextObject);
+    if (UUIPackage* Pkg = GetPackageByName(PackageName))
+        return Pkg->CreateObject(ResourceName, WorldContextObject);
     else
         return nullptr;
 }
 
 UGObject* UUIPackage::CreateObjectFromURL(const FString& URL, UObject* WorldContextObject, TSubclassOf<UGObject> ClassType)
 {
-    TSharedPtr<FPackageItem> pii = UUIPackage::GetItemByURL(URL);
+    const TSharedPtr<FPackageItem> pii = GetItemByURL(URL);
     if (pii.IsValid())
         return pii->Owner->CreateObject(pii, WorldContextObject);
     else

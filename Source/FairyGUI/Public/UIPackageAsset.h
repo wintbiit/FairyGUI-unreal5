@@ -5,18 +5,11 @@
 #include "UIPackageAsset.generated.h"
 
 UCLASS()
-class FAIRYGUI_API UUIPackageAsset final : public UPrimaryDataAsset
+class FAIRYGUI_API UUIPackageAsset final : public UObject
 {
     GENERATED_BODY()
 
 public:
-    static FPrimaryAssetType AssetType;
-
-    virtual FPrimaryAssetId GetPrimaryAssetId() const override
-    {
-        return FPrimaryAssetId(AssetType, *ID);
-    }
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
     FString Name;
 
@@ -24,7 +17,7 @@ public:
     FString ID;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
-    TMap<FString, FPrimaryAssetId> Dependencies;
+    TArray<struct FUIPackageDependency> Dependencies;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
     TMap<FString, TSoftObjectPtr<UObject>> Resources;

@@ -1,8 +1,6 @@
 #include "UIPackageAsset.h"
 #include "EditorFramework/AssetImportData.h"
 
-FPrimaryAssetType UUIPackageAsset::AssetType(TEXT("UIPackage"));
-
 #if WITH_EDITORONLY_DATA
 void UUIPackageAsset::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const
 {

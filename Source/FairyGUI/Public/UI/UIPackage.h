@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FairyApplication.h"
 #include "UObject/NoExportTypes.h"
 #include "UIPackage.generated.h"
 
@@ -52,10 +53,16 @@ public:
     static void RemoveAllPackages();
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static UUIPackage* GetPackageByID(const FString& PackageID);
+    static UUIPackage* GetPackageByID(const FString& PackageID)
+    {
+        return UFairyApplication::PackageInstByID.FindRef(PackageID);
+    }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI")
-    static UUIPackage* GetPackageByName(const FString& PackageName);
+    static UUIPackage* GetPackageByName(const FString& PackageName)
+    {
+        return UFairyApplication::PackageInstByName.FindRef(PackageName);
+    }
 
     UFUNCTION(BlueprintCallable, Category = "FairyGUI", meta = (DisplayName = "Create UI", DeterminesOutputType = "ClassType", WorldContext = "WorldContextObject"))
     static UGObject* CreateObject(const FString& PackageName, const FString& ResourceName, UObject* WorldContextObject, TSubclassOf<UGObject> ClassType = nullptr);

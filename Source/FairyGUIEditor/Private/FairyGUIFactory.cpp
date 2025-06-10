@@ -36,7 +36,7 @@ UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParen
     UIAsset->ID = Package->GetID();
     for (auto [Id, Name] : Package->GetDependencies())
     {
-        UIAsset->Dependencies.Add(Name, FPrimaryAssetId(UUIPackageAsset::AssetType, *Id));
+        UIAsset->Dependencies.Add(FUIPackageDependency(Id, Name));
     }
     for (const TSharedPtr<FPackageItem>& PackageItem : Package->Items)
     {

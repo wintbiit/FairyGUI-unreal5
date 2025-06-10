@@ -1,10 +1,7 @@
 #include "Widgets/NTextFormat.h"
 
 #include "FairyApplication.h"
-#include "FairyCommons.h"
-#include "Engine/FontFace.h"
 #include "UI/UIConfig.h"
-#include "UI/UIPackage.h"
 
 FNTextFormat::FNTextFormat() :
     Size(12),
@@ -32,34 +29,6 @@ bool FNTextFormat::EqualStyle(const FNTextFormat& AnotherFormat) const
         && Align == AnotherFormat.Align;
 }
 
-
-UFont* FindFontFace(const FString& Name)
-{
-    if (Name.IsEmpty())
-    {
-        return nullptr;
-    }
-    
-    TArray PotentialPaths = {
-        FString::Printf(TEXT("/Game/Fonts/%s"), *Name),
-        FString::Printf(TEXT("/Game/Fonts/%s_Font"), *Name),
-        FString::Printf(TEXT("/Game/UI/Fonts/Fonts/%s"), *Name),
-        FString::Printf(TEXT("/Game/UI/Fonts/Fonts/%s_Font"), *Name),
-    };
-
-    UFont* FontFace = nullptr;
-    for (FString PotentialPath : PotentialPaths)
-    {
-        FontFace = LoadObject<UFont>(nullptr, *PotentialPath);
-        if (FontFace != nullptr)
-        {
-            break;
-        }
-    }
-
-    return FontFace;
-}
-
 FTextBlockStyle FNTextFormat::GetStyle() const
 {
     FTextBlockStyle Style;
@@ -67,16 +36,7 @@ FTextBlockStyle FNTextFormat::GetStyle() const
     const FString& FontFace = Face.IsEmpty() ? UFairyApplication::GetUIConfig().DefaultFont : Face;
     if (!FontFace.StartsWith("ui://"))
     {
-        auto Font = UFairyApplication::Fonts.FindRef(FontFace);
-        if (Font == nullptr)
-        {
-            Font = FindFontFace(*FontFace);
-            if (Font != nullptr)
-            {
-                UFairyApplication::Fonts.Add(FontFace, Font);
-            }
-        }
-        if (Font != nullptr)
+        if (auto Font = UFairyApplication::Fonts.FindRef(FontFace); Font != nullptr)
         {
             FSlateFontInfo SlateFont(Font.Get(), Size * 0.75f);
             SlateFont.OutlineSettings.OutlineSize = OutlineSize;
