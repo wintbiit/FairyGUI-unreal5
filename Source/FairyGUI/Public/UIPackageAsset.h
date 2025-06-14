@@ -20,7 +20,7 @@ public:
     TArray<struct FUIPackageDependency> Dependencies;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
-    TMap<FString, TSoftObjectPtr<UObject>> Resources;
+    TArray<TObjectPtr<UObject>> Resources;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FairyGUI")
     TArray<uint8> Data;

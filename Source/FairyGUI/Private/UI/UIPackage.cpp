@@ -255,6 +255,12 @@ UGObject* UUIPackage::CreateObject(const TSharedPtr<FPackageItem>& Item, UObject
 
 void UUIPackage::RegisterFont(const FString& FontFace, UFont* Font, UObject* WorldContextObject)
 {
+    if (UFairyApplication::Get(WorldContextObject)->Fonts.Contains(FontFace))
+    {
+        UE_LOG(LogFairyGUI, Warning, TEXT("Font '%s' already registered."), *FontFace);
+        return;
+    }
+    
     UFairyApplication::Get(WorldContextObject)->Fonts.Add(FontFace, Font);
 }
 

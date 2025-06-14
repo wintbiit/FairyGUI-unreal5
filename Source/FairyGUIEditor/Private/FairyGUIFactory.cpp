@@ -1,5 +1,4 @@
 #include "FairyGUIFactory.h"
-#include "Serialization/BufferArchive.h"
 #include "EditorFramework/AssetImportData.h"
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
@@ -44,8 +43,9 @@ UObject* UFairyGUIFactory::FactoryCreateBinary(UClass* InClass, UObject* InParen
         {
             continue; // Skip items without a file path
         }
-        
-        UIAsset->Resources.Add(PackageItem->File, TSoftObjectPtr<UObject>(FSoftObjectPath(PackageItem->File)));
+
+        TObjectPtr<UObject> Resource = LoadObject<UObject>(InParent, *PackageItem->File);
+        UIAsset->Resources.Add(Resource);
     }
 
     UUIPackage::RemoveAllPackages();
